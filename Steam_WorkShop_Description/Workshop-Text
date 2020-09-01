@@ -1,23 +1,49 @@
-Mutator that applies different sound effects for ZEDs, also, mixes up some ZED Skins (Summer & Halloween)
+Sick & Tired of no one calling FPs & SCs ? Don't know which key to bind for Call Outs ? Then this mutator is for you.
+
+- Automatically sends a message to all players with the currently 'Spawned' Fleshpounds & Scrakes
+- Customizable Message
+- Customizable Message Colors
 
 NOTE:
 
-- Based off Marco's Classic Zeds Mut, edited by me to support Sounds instead of SoundGroups only and made each sound selectable instead of changing everything at once
+- Credits to DeezNuts & NikC for some parts of the code
 
 [h1][b][u]Features that might be added[/u][/b][/h1]
 
-- I will always update this whenever i have time or find a new sound that suits a ZED. Suggestions are welcome too!
+- I plan to make this an addition to the UI (Like HP, Ammo etc.. )
+- I plan to integrate this with saying player names who first see a FleshPound / Scrake (This will be helpful in teamplays)
+- I plan to add Emoticon support
 
 [h1][b][u]Number Of Files[/u][/b][/h1]
 
 - 3
 
+[h1][b][u]Sample Config[/u][/b][/h1]
+
+[code]
+[KFAutoCallOut.KFAutoCallOut]
+# Replace %g %w %b with any other color you want from the list below
+# After you right your warning message, use %FP and %SC as the number of Fleshpounds and Scrakes
+sWarningMSG=-----|| %gFP Count: %w %FPx | %bSC Count: %w %SCx ||-----
+# Change the Delay/Frequency of each sent warning message. I find 5 Seconds to be optimal
+iDelay=5
+# Better to keep debugging off :)
+bDebug=True
+# You can add more colors by using the same format of the below ColorList
+ColorList=(ColorName="Red",ColorTag="%r",Color=(B=0,G=0,R=200,A=0))
+ColorList=(ColorName="Orange",ColorTag="%o",Color=(B=0,G=127,R=255,A=0))
+ColorList=(ColorName="Yellow",ColorTag="%y",Color=(B=0,G=255,R=255,A=0))
+ColorList=(ColorName="Green",ColorTag="%g",Color=(B=0,G=200,R=0,A=0))
+ColorList=(ColorName="Blue",ColorTag="%b",Color=(B=200,G=100,R=0,A=0))
+ColorList=(ColorName="Violet",ColorTag="%v",Color=(B=139,G=0,R=255,A=0))
+ColorList=(ColorName="White",ColorTag="%w",Color=(B=200,G=200,R=200,A=0))
+[/code]
+
 [h1][b][u]File Names[/u][/b][/h1]
 
-- \System\KFZedVoiceChanger.u
-- \System\KFZedVoiceChanger.ucl
-
-- \Sounds\KF_VP.uax
+- \System\KFAutoCallOut.u
+- \System\KFAutoCallOut.ucl
+- \System\KFAutoCallOut.ini
 
 [h1][b][u]Usage[/u][/b][/h1]
 
@@ -27,10 +53,10 @@ NOTE:
 
 [h1][b][u]Class Names[/u][/b][/h1]
 
-- Mut: KFZedVoiceChanger.KFZedVoiceChanger
+- Mut: KFAutoCallOut.KFAutoCallOut
 
 [h1][b][u]Manual Download Links (Recommended)[/u][/b][/h1]
 
-You can find it under 'Not Whitelisted' folder named 'KF-ZedVoiceChanger-v3.1'
+You can find it under 'Not Whitelisted' folder named 'KF-KFAutoCallOut-v1.0'
 
 MEGA Link: https://mega DOT nz/folder/YDoEmKiC#s6FGAtgh40-TvB4bHsLaMQ

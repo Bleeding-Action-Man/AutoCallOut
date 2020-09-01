@@ -1,6 +1,6 @@
 //=============================================================================
-// Automatically sends a message to all players that XX has seen/spotted a
-// Scrake or a FleshPound
+// Automatically sends a message to all players with how many Scrakes &
+// FleshPounds are currently spawned
 // Written by Vel-San
 // for more information, feedback, questions or requests please contact
 // https://steamcommunity.com/id/Vel-San/
@@ -9,37 +9,55 @@
 Class KFAutoCallOut extends Mutator config(KFAutoCallOut);
 
 var() config bool bDEBUG;
+var() config string sWarningMSG;
+var() config int iDelay;
+
 var bool DEBUG;
+var string WarningMSG;
+var int Delay;
+
+// Colors from Config
+struct ColorRecord
+{
+  var config string ColorName; // Color name, for comfort
+  var config string ColorTag; // Color tag
+  var config Color Color; // RGBA values
+};
+var() config array<ColorRecord> ColorList; // Color list
 
 replication
 {
 	unreliable if (Role == ROLE_Authority)
-		bDEBUG,
-		DEBUG;
+		sWarningMSG, iDelay, bDEBUG,
+		WarningMSG, Delay, DEBUG;
 }
 
 simulated function PostBeginPlay()
 {
+	TimeStampLog("-----|| Server Vars Replicated ||-----");
+
+  WarningMSG = sWarningMSG;
+  Delay = iDelay;
 	DEBUG = bDEBUG;
 
-  MutLog("-----|| Changing SC & FP Controller ||-----");
-  class'ZombieFleshpound'.Default.ControllerClass = Class'FPCustomController';
-  class'ZombieScrake'.Default.ControllerClass = Class'SCCustomController';
+  // TO-DO Complete this to show player name who sees Fleshpounds and Scrakes first
+  // MutLog("-----|| Changing SC & FP Controller ||-----");
+  // class'ZombieFleshpound'.Default.ControllerClass = Class'FPCustomController';
+  // class'ZombieScrake'.Default.ControllerClass = Class'SCCustomController';
 
-	SetTimer(1,true);
-}
+  if(DEBUG){
+    MutLog("-----|| DEBUG - MSG: " $WarningMSG$ " ||-----");
+    MutLog("-----|| DEBUG - Delay: " $Delay$ " ||-----");
+  }
 
-simulated function PostNetBeginPlay()
-{
-	// Future code goes here if values needed from the server
-	TimeStampLog("-----|| Server Vars Replicated ||-----");
-	if(DEBUG){
-	}
+	SetTimer( Delay, true);
 }
 
 static function FillPlayInfo(PlayInfo PlayInfo)
 {
 	Super.FillPlayInfo(PlayInfo);
+  PlayInfo.AddSetting("KFAutoCallOut", "sWarningMSG", "Warning Message", 0, 0, "text");
+  PlayInfo.AddSetting("KFAutoCallOut", "iDelay", "MSG Frequency", 0, 0, "text");
   PlayInfo.AddSetting("KFAutoCallOut", "bDEBUG", "DEBUG", 0, 0, "check");
 }
 
@@ -47,8 +65,12 @@ static function string GetDescriptionText(string SettingName)
 {
 	switch(SettingName)
 	{
+    case "sWarningMSG":
+			return "Message to show players about SCs & FPs number. Use %FP for Fleshpounds & %SC for Scrakes";
+    case "iDelay":
+			return "How often will the warning message be sent out ( in Seconds ) | Preffered 5";
 		case "bDEBUG":
-			return "Shows some Debugging messages in the LOG. Better to keep off!";
+			return "Shows some Debugging messages in the LOG. Keep OFF unless you know what you are doing!";
 		default:
 			return Super.GetDescriptionText(SettingName);
 	}
@@ -64,59 +86,76 @@ simulated function MutLog(string s)
   log(s, 'AutoCallOut');
 }
 
-function Timer(){
-	ApplyMonsterControllerChange();
+function Timer()
+{
+  local string tmpMSG, sFP, sSC;;
+  local int iFP, iCountFP, iSC, iCountSC;
+
+	iFP = CheckFleshPoundCount(iCountFP);
+  iSC = CheckScrakeCount(iCountSC);
+  sFP = string(iFP);
+  sSC = string(iSC);
+  tmpMSG = WarningMSG;
+
+  ReplaceText(tmpMSG, "%FP", sFP);
+  ReplaceText(tmpMSG, "%SC", sSC);
+
+  if (iFP != 0 || iSC != 0){
+    BroadcastMSG(tmpMSG);
+  }
+
+  if(DEBUG){
+	  MutLog("-----|| DEBUG - FP Count: " $iFP$ "x | SC Count: " $iSC$ "x ||-----");
+    MutLog("-----|| DEBUG - WarningMSG: " $tmpMSG$ " ||-----");
+  }
 }
 
-simulated function ApplyMonsterControllerChange(){
+// TO-DO Decrease count if FP or SC Killed is killed, to keep the number always up to date
+function int CheckFleshPoundCount(int i){
   local KFMonster Monster;
-  local int i, j;
-  // local KFGameType KF;
-	// KF = KFGameType(Level.Game);
 
   foreach DynamicActors(class'KFMonster', Monster){
     if (Monster.isA('ZombieFleshpound')){
         i = i + 1;
-        	if(DEBUG){
+        	/*if(DEBUG){
 	          MutLog("-----|| DEBUG - FP Controller: " $Monster.ControllerClass$ " ||-----");
-	        }
-    }
-    if (Monster.isA('ZombieScrake')){
-        j = j + 1;
-        if(DEBUG){
-	          MutLog("-----|| DEBUG - SC Controller: " $Monster.ControllerClass$ " ||-----");
-	        }
+	        }*/
     }
   }
-
-  if(DEBUG){
-	MutLog("-----|| DEBUG - FP Count: " $i$ "x | SC Count: " $j$ "x ||-----");
-  }
-
-  // KF.PrepareSpecialSquads();
-  // KF.LoadUpMonsterList();
-
+  return i;
 }
 
-/*
+// TO-DO Decrease count if FP or SC Killed, to keep the number always up to date
+function int CheckScrakeCount(int j){
+  local KFMonster Monster;
+
+  foreach DynamicActors(class'KFMonster', Monster){
+    if (Monster.isA('ZombieScrake')){
+        j = j + 1;
+        /*if(DEBUG){
+	          MutLog("-----|| DEBUG - SC Controller: " $Monster.ControllerClass$ " ||-----");
+	        }*/
+    }
+  }
+  return j;
+}
+
 /////////////////////////////////////////////////////////////////////////
 // BELOW SECTION IS CREDITED FOR ServerAdsKF Mutator | NikC	& DeeZNutZ //
 
-// Send Notification
-event BroadcastAd(coerce string Msg)
+// Send MSG to Players
+event BroadcastMSG(coerce string Msg)
 {
   local PlayerController pc;
   local Controller c;
   local string strTemp;
 
-  //convert color tags to colors
-  //and apply to messages
-  if(Left(Msg,1)!="#")
-    SetColor(Msg);
+  // Apply Colors to MSG
+  SetColor(Msg);
 
   for(c = level.controllerList; c != none; c = c.nextController)
   {
-    //allow only player controllers
+    // Allow only player controllers
     if(!c.isA('PlayerController'))
       continue;
 
@@ -124,26 +163,15 @@ event BroadcastAd(coerce string Msg)
     if(pc == none)
       continue;
 
-    if(left(Msg,1)=="#")
-    {
-      Msg = right(Msg,len(Msg)-1);
-      pc.ClearProgressMessages();
-      pc.SetProgressTime(iAdminMsgDuration);
-      pc.SetProgressMessage(0, Msg, cAdminMsgColor);
-      LogD("ServerAdsKF admin line: "$Msg);
-      return;
-    }
-
-    // remove colors for server log and WebAdmin
+    // Remove colors for server log and WebAdmin
     if(pc.PlayerReplicationInfo.PlayerID == 0)
     {
       strTemp = RemoveColor(Msg);
-      pc.teamMessage(none, strTemp, 'ServerAdsKF');
-      LogD("ServerAdsKF line: "$Msg);
+      pc.teamMessage(none, strTemp, 'KFAutoCallOut');
       continue;
     }
 
-    pc.teamMessage(none, Msg, 'ServerAdsKF');
+    pc.teamMessage(none, Msg, 'KFAutoCallOut');
   }
 }
 
@@ -179,7 +207,7 @@ function string RemoveColor(string S)
   Return S;
 }
 //////////////////////////////////////////////////////////////////////
-*/
+
 
 defaultproperties
 {
