@@ -4,6 +4,10 @@ Sick & Tired of no one calling FPs & SCs ? Don't know which key to bind for Call
 - Customizable Message
 - Customizable Message Colors
 
+&
+
+- Mut is WHITELISTED (On Dedicated Servers | Listen Server is probably whitelisted for everyone except the Host)
+
 NOTE:
 
 - Credits to DeezNuts & NikC for some parts of the code
@@ -57,6 +61,6 @@ ColorList=(ColorName="White",ColorTag="%w",Color=(B=200,G=200,R=200,A=0))
 
 [h1][b][u]Manual Download Links (Recommended)[/u][/b][/h1]
 
-You can find it under 'Not Whitelisted' folder named 'KF-KFAutoCallOut-v1.0'
+You can find it under 'Whitelisted' folder named 'KF-KFAutoCallOut-v1.0'
 
 MEGA Link: https://mega DOT nz/folder/YDoEmKiC#s6FGAtgh40-TvB4bHsLaMQ

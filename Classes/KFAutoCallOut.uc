@@ -25,17 +25,8 @@ struct ColorRecord
 };
 var() config array<ColorRecord> ColorList; // Color list
 
-replication
+function PostBeginPlay()
 {
-	unreliable if (Role == ROLE_Authority)
-		sWarningMSG, iDelay, bDEBUG,
-		WarningMSG, Delay, DEBUG;
-}
-
-simulated function PostBeginPlay()
-{
-	TimeStampLog("-----|| Server Vars Replicated ||-----");
-
   WarningMSG = sWarningMSG;
   Delay = iDelay;
 	DEBUG = bDEBUG;
@@ -110,31 +101,23 @@ function Timer()
   }
 }
 
-// TO-DO Decrease count if FP or SC Killed is killed, to keep the number always up to date
 function int CheckFleshPoundCount(int i){
   local KFMonster Monster;
 
   foreach DynamicActors(class'KFMonster', Monster){
     if (Monster.isA('ZombieFleshpound')){
         i = i + 1;
-        	/*if(DEBUG){
-	          MutLog("-----|| DEBUG - FP Controller: " $Monster.ControllerClass$ " ||-----");
-	        }*/
     }
   }
   return i;
 }
 
-// TO-DO Decrease count if FP or SC Killed, to keep the number always up to date
 function int CheckScrakeCount(int j){
   local KFMonster Monster;
 
   foreach DynamicActors(class'KFMonster', Monster){
     if (Monster.isA('ZombieScrake')){
         j = j + 1;
-        /*if(DEBUG){
-	          MutLog("-----|| DEBUG - SC Controller: " $Monster.ControllerClass$ " ||-----");
-	        }*/
     }
   }
   return j;
@@ -214,7 +197,7 @@ defaultproperties
 	// Mut Vars
   GroupName="KF-AutoCallOut"
   FriendlyName="FP & SC Auto Call Out - v1.0"
-  Description="Automatically calls out FPs & SCs as a broadcast message to all players; By Vel-San"
+  Description="Automatically calls out FPs & SCs as a broadcast message to all players [Whitelisted]; By Vel-San"
   bAlwaysRelevant=True
   RemoteRole=ROLE_SimulatedProxy
 	bNetNotify=True
