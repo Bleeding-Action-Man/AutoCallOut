@@ -1,0 +1,36 @@
+Mutator that applies different sound effects for ZEDs, also, mixes up some ZED Skins (Summer & Halloween)
+
+NOTE:
+
+- Based off Marco's Classic Zeds Mut, edited by me to support Sounds instead of SoundGroups only and made each sound selectable instead of changing everything at once
+
+[h1][b][u]Features that might be added[/u][/b][/h1]
+
+- I will always update this whenever i have time or find a new sound that suits a ZED. Suggestions are welcome too!
+
+[h1][b][u]Number Of Files[/u][/b][/h1]
+
+- 3
+
+[h1][b][u]File Names[/u][/b][/h1]
+
+- \System\KFZedVoiceChanger.u
+- \System\KFZedVoiceChanger.ucl
+
+- \Sounds\KF_VP.uax
+
+[h1][b][u]Usage[/u][/b][/h1]
+
+1- Subscribe or download manually (Recommended)
+2- Launch the game and wait to see 'Completed'
+3- Restart the game and you can see the mutators in your list
+
+[h1][b][u]Class Names[/u][/b][/h1]
+
+- Mut: KFZedVoiceChanger.KFZedVoiceChanger
+
+[h1][b][u]Manual Download Links (Recommended)[/u][/b][/h1]
+
+You can find it under 'Not Whitelisted' folder named 'KF-ZedVoiceChanger-v3.1'
+
+MEGA Link: https://mega DOT nz/folder/YDoEmKiC#s6FGAtgh40-TvB4bHsLaMQ
