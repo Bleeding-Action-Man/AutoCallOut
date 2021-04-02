@@ -6,7 +6,7 @@
 // https://steamcommunity.com/id/Vel-San/
 //=============================================================================
 
-Class KFAutoCallOut extends Mutator config(KFAutoCallOut);
+Class AutoCallOut extends Mutator config(AutoCallOut);
 
 var() config bool bDebug;
 var() config string sWarningMSG;
@@ -36,9 +36,9 @@ function PostBeginPlay()
 static function FillPlayInfo(PlayInfo PlayInfo)
 {
   Super.FillPlayInfo(PlayInfo);
-  PlayInfo.AddSetting("KFAutoCallOut", "sWarningMSG", "Warning Message", 0, 0, "text");
-  PlayInfo.AddSetting("KFAutoCallOut", "iDelay", "MSG Frequency", 0, 0, "text");
-  PlayInfo.AddSetting("KFAutoCallOut", "bDebug", "Debug", 0, 0, "check");
+  PlayInfo.AddSetting("AutoCallOut", "sWarningMSG", "Warning Message", 0, 0, "text");
+  PlayInfo.AddSetting("AutoCallOut", "iDelay", "MSG Frequency", 0, 0, "text");
+  PlayInfo.AddSetting("AutoCallOut", "bDebug", "Debug", 0, 0, "check");
 }
 
 static function string GetDescriptionText(string SettingName)
@@ -143,11 +143,11 @@ event BroadcastMSG(coerce string Msg)
   if(pc.PlayerReplicationInfo.PlayerID == 0)
   {
     strTemp = RemoveColor(Msg);
-    pc.teamMessage(none, strTemp, 'KFAutoCallOut');
+    pc.teamMessage(none, strTemp, 'AutoCallOut');
     continue;
   }
 
-  pc.teamMessage(none, Msg, 'KFAutoCallOut');
+  pc.teamMessage(none, Msg, 'AutoCallOut');
   }
 }
 
@@ -189,9 +189,6 @@ defaultproperties
 {
   // Mut Vars
   GroupName="KF-AutoCallOut"
-  FriendlyName="FP & SC Auto Call Out - v1.0"
+  FriendlyName="FP & SC Auto Call Out - v1.1"
   Description="Automatically calls out FPs & SCs as a broadcast message to all players [Whitelisted]; By Vel-San"
-  bAlwaysRelevant=True
-  RemoteRole=ROLE_SimulatedProxy
-  bNetNotify=True
 }
