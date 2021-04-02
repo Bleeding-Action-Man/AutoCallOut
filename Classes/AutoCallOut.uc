@@ -1,17 +1,18 @@
 //=============================================================================
-// Automatically sends a message to all players with how many Scrakes &
+// Automatically sends a message & sound effect to all players with how many Scrakes &
 // FleshPounds are currently spawned
-// Written by Vel-San
 // for more information, feedback, questions or requests please contact
 // https://steamcommunity.com/id/Vel-San/
 //=============================================================================
 
-Class AutoCallOut extends Mutator config(AutoCallOut);
+Class AutoCallOut extends Mutator config(AutoCallOut_Config);
 
-var() config bool bDebug;
-var() config string sWarningMSG;
-var() config int iDelay;
+#exec OBJ LOAD FILE=ACO_SNDS.uax
 
+// Config Vars
+var config bool bDebug, bPlaySoundFP, bPlaySoundSC;
+var config string sWarningMSG, sFleshSND, sScrakeSND;
+var config int iDelay, iDelayFP, iDelaySC;
 
 // Colors from Config
 struct ColorRecord
@@ -20,59 +21,78 @@ struct ColorRecord
   var config string ColorTag; // Color tag
   var config Color Color; // RGBA values
 };
-var() config array<ColorRecord> ColorList; // Color list
+var config array<ColorRecord> ColorList; // Color list
+
+// Mut Vars
+var KFGameType KFGT;
+var bool bPlayFP, bPlaySC;
+var int iFP, iSC, iLastPlayedAtFP, iLastPlayedAtSC, tmpFP, tmpSC;
 
 function PostBeginPlay()
 {
+  // Var init
+  KFGT = KFGameType(Level.Game);
+  bPlayFP = false;
+  bPlaySC = false;
+  iFP = 0;
+  iSC = 0;
+  iLastPlayedAtFP = 0;
+  iLastPlayedAtSC = 0;
+  tmpFP = 0;
+  tmpSC = 0;
+
+  // Force client to download SoundPack
+  AddToPackageMap("ACO_SNDS.uax");
+
   if(bDebug)
   {
     MutLog("-----|| Debug - MSG: " $sWarningMSG$ " ||-----");
+    MutLog("-----|| Debug - FP Sound: " $sFleshSND$ " ||-----");
+    MutLog("-----|| Debug - SC Sound: " $sScrakeSND$ " ||-----");
     MutLog("-----|| Debug - Delay: " $iDelay$ " ||-----");
+    MutLog("-----|| Debug - Flesh Pound Sound Delay: " $iDelayFP$ " ||-----");
+    MutLog("-----|| Debug - Scrake Sound Delay: " $iDelaySC$ " ||-----");
   }
 
-  SetTimer( iDelay, true);
+  SetTimer(iDelay, true);
 }
 
-static function FillPlayInfo(PlayInfo PlayInfo)
+function tick(float Deltatime)
 {
-  Super.FillPlayInfo(PlayInfo);
-  PlayInfo.AddSetting("AutoCallOut", "sWarningMSG", "Warning Message", 0, 0, "text");
-  PlayInfo.AddSetting("AutoCallOut", "iDelay", "MSG Frequency", 0, 0, "text");
-  PlayInfo.AddSetting("AutoCallOut", "bDebug", "Debug", 0, 0, "check");
-}
-
-static function string GetDescriptionText(string SettingName)
-{
-  switch(SettingName)
+  if (KFGT.bWaveInProgress && !KFGT.IsInState('PendingMatch') && !KFGT.IsInState('GameEnded'))
   {
-    case "sWarningMSG":
-        return "Message to show players about SCs & FPs number. Use %FP for Fleshpounds & %SC for Scrakes";
-    case "iDelay":
-        return "How often will the warning message be sent out ( in Seconds ) | Preffered 5";
-    case "bDebug":
-        return "Shows some Debugging messages in the LOG. Keep OFF unless you know what you are doing!";
-    default:
-        return Super.GetDescriptionText(SettingName);
+    // Always gather count of FPs & SCs
+    iFP = CheckFleshPoundCount();
+    iSC = CheckScrakeCount();
+
+    // Play FP Sound
+    if (bPlaySoundFP && bPlayFP && (tmpFP < iFP) && (iLastPlayedAtFP < Level.TimeSeconds))
+    {
+      tmpFP = iFP;
+      PlaySoundFP(sFleshSND);
+    }
+
+    // Play FP Sound
+    if (bPlaySoundSC && bPlaySC && (tmpSC < iSC) && (iLastPlayedAtSC < Level.TimeSeconds))
+    {
+      tmpSC = iSC;
+      PlaySoundSC(sScrakeSND);
+    }
   }
-}
-
-simulated function TimeStampLog(coerce string s)
-{
-  log("["$Level.TimeSeconds$"s]" @ s, 'AutoCallOut');
-}
-
-simulated function MutLog(string s)
-{
-  log(s, 'AutoCallOut');
 }
 
 function Timer()
 {
-  local string tmpMSG, sFP, sSC;;
-  local int iFP, iCountFP, iSC, iCountSC;
+  if (KFGT.bWaveInProgress && !KFGT.IsInState('PendingMatch') && !KFGT.IsInState('GameEnded'))
+  {
+    CallOut();
+  }
+}
 
-  iFP = CheckFleshPoundCount(iCountFP);
-  iSC = CheckScrakeCount(iCountSC);
+function CallOut()
+{
+  local string tmpMSG, sFP, sSC;
+
   sFP = string(iFP);
   sSC = string(iSC);
   tmpMSG = sWarningMSG;
@@ -92,8 +112,10 @@ function Timer()
   }
 }
 
-function int CheckFleshPoundCount(int i){
+function int CheckFleshPoundCount()
+{
   local KFMonster Monster;
+  local int i;
 
   foreach DynamicActors(class'KFMonster', Monster){
     if (Monster.isA('ZombieFleshpound'))
@@ -101,11 +123,15 @@ function int CheckFleshPoundCount(int i){
       i = i + 1;
     }
   }
+  if (i >= 1) bPlayFP = true;
+  else bPlayFP = false;
   return i;
 }
 
-function int CheckScrakeCount(int j){
+function int CheckScrakeCount()
+{
   local KFMonster Monster;
+  local int j;
 
   foreach DynamicActors(class'KFMonster', Monster){
     if (Monster.isA('ZombieScrake'))
@@ -113,7 +139,51 @@ function int CheckScrakeCount(int j){
       j = j + 1;
     }
   }
+  if (j >= 1) bPlaySC = true;
+  else bPlaySC = false;
   return j;
+}
+
+function PlaySoundFP(string Sound)
+{
+  local Controller C;
+  local sound SoundEffect;
+
+  SoundEffect = sound(DynamicLoadObject(Sound, class'Sound'));
+  for( C = Level.ControllerList; C != None; C = C.nextController )
+	{
+		if( C.IsA('PlayerController') && PlayerController(C).PlayerReplicationInfo.PlayerID != 0)
+		{
+			PlayerController(C).ClientPlaySound(SoundEffect, true, 20);
+      iLastPlayedAtFP = Level.TimeSeconds + iDelayFP;
+		}
+	}
+}
+
+function PlaySoundSC(string Sound)
+{
+  local Controller C;
+  local sound SoundEffect;
+
+  SoundEffect = sound(DynamicLoadObject(Sound, class'Sound'));
+  for( C = Level.ControllerList; C != None; C = C.nextController )
+	{
+		if( C.IsA('PlayerController') && PlayerController(C).PlayerReplicationInfo.PlayerID != 0)
+		{
+			PlayerController(C).ClientPlaySound(SoundEffect, true, 20);
+      iLastPlayedAtSC = Level.TimeSeconds + iDelaySC;
+		}
+	}
+}
+
+simulated function TimeStampLog(coerce string s)
+{
+  log("["$Level.TimeSeconds$"s]" @ s, 'AutoCallOut');
+}
+
+simulated function MutLog(string s)
+{
+  log(s, 'AutoCallOut');
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -190,5 +260,5 @@ defaultproperties
   // Mut Vars
   GroupName="KF-AutoCallOut"
   FriendlyName="FP & SC Auto Call Out - v1.1"
-  Description="Automatically calls out FPs & SCs as a broadcast message to all players [Whitelisted]; By Vel-San"
+  Description="Prints number of SC & FP Globally, and plays Spawn sound effects like KF2 [Whitelisted]; By Vel-San"
 }
