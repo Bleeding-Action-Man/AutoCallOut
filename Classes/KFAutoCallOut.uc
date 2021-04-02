@@ -29,24 +29,25 @@ function PostBeginPlay()
 {
   WarningMSG = sWarningMSG;
   Delay = iDelay;
-	DEBUG = bDEBUG;
+  DEBUG = bDEBUG;
 
   // TO-DO Complete this to show player name who sees Fleshpounds and Scrakes first
   // MutLog("-----|| Changing SC & FP Controller ||-----");
   // class'ZombieFleshpound'.Default.ControllerClass = Class'FPCustomController';
   // class'ZombieScrake'.Default.ControllerClass = Class'SCCustomController';
 
-  if(DEBUG){
+  if(DEBUG)
+  {
     MutLog("-----|| DEBUG - MSG: " $WarningMSG$ " ||-----");
     MutLog("-----|| DEBUG - Delay: " $Delay$ " ||-----");
   }
 
-	SetTimer( Delay, true);
+  SetTimer( Delay, true);
 }
 
 static function FillPlayInfo(PlayInfo PlayInfo)
 {
-	Super.FillPlayInfo(PlayInfo);
+  Super.FillPlayInfo(PlayInfo);
   PlayInfo.AddSetting("KFAutoCallOut", "sWarningMSG", "Warning Message", 0, 0, "text");
   PlayInfo.AddSetting("KFAutoCallOut", "iDelay", "MSG Frequency", 0, 0, "text");
   PlayInfo.AddSetting("KFAutoCallOut", "bDEBUG", "DEBUG", 0, 0, "check");
@@ -54,17 +55,17 @@ static function FillPlayInfo(PlayInfo PlayInfo)
 
 static function string GetDescriptionText(string SettingName)
 {
-	switch(SettingName)
-	{
+  switch(SettingName)
+  {
     case "sWarningMSG":
-			return "Message to show players about SCs & FPs number. Use %FP for Fleshpounds & %SC for Scrakes";
+        return "Message to show players about SCs & FPs number. Use %FP for Fleshpounds & %SC for Scrakes";
     case "iDelay":
-			return "How often will the warning message be sent out ( in Seconds ) | Preffered 5";
-		case "bDEBUG":
-			return "Shows some Debugging messages in the LOG. Keep OFF unless you know what you are doing!";
-		default:
-			return Super.GetDescriptionText(SettingName);
-	}
+        return "How often will the warning message be sent out ( in Seconds ) | Preffered 5";
+    case "bDEBUG":
+        return "Shows some Debugging messages in the LOG. Keep OFF unless you know what you are doing!";
+    default:
+        return Super.GetDescriptionText(SettingName);
+  }
 }
 
 simulated function TimeStampLog(coerce string s)
@@ -82,7 +83,7 @@ function Timer()
   local string tmpMSG, sFP, sSC;;
   local int iFP, iCountFP, iSC, iCountSC;
 
-	iFP = CheckFleshPoundCount(iCountFP);
+  iFP = CheckFleshPoundCount(iCountFP);
   iSC = CheckScrakeCount(iCountSC);
   sFP = string(iFP);
   sSC = string(iSC);
@@ -91,12 +92,14 @@ function Timer()
   ReplaceText(tmpMSG, "%FP", sFP);
   ReplaceText(tmpMSG, "%SC", sSC);
 
-  if (iFP != 0 || iSC != 0){
+  if (iFP != 0 || iSC != 0)
+  {
     BroadcastMSG(tmpMSG);
   }
 
-  if(DEBUG){
-	  MutLog("-----|| DEBUG - FP Count: " $iFP$ "x | SC Count: " $iSC$ "x ||-----");
+  if(DEBUG)
+  {
+    MutLog("-----|| DEBUG - FP Count: " $iFP$ "x | SC Count: " $iSC$ "x ||-----");
     MutLog("-----|| DEBUG - WarningMSG: " $tmpMSG$ " ||-----");
   }
 }
@@ -105,8 +108,9 @@ function int CheckFleshPoundCount(int i){
   local KFMonster Monster;
 
   foreach DynamicActors(class'KFMonster', Monster){
-    if (Monster.isA('ZombieFleshpound')){
-        i = i + 1;
+    if (Monster.isA('ZombieFleshpound'))
+    {
+      i = i + 1;
     }
   }
   return i;
@@ -116,8 +120,9 @@ function int CheckScrakeCount(int j){
   local KFMonster Monster;
 
   foreach DynamicActors(class'KFMonster', Monster){
-    if (Monster.isA('ZombieScrake')){
-        j = j + 1;
+    if (Monster.isA('ZombieScrake'))
+    {
+      j = j + 1;
     }
   }
   return j;
@@ -138,23 +143,23 @@ event BroadcastMSG(coerce string Msg)
 
   for(c = level.controllerList; c != none; c = c.nextController)
   {
-    // Allow only player controllers
-    if(!c.isA('PlayerController'))
-      continue;
+  // Allow only player controllers
+  if(!c.isA('PlayerController'))
+    continue;
 
-    pc = PlayerController(c);
-    if(pc == none)
-      continue;
+  pc = PlayerController(c);
+  if(pc == none)
+    continue;
 
-    // Remove colors for server log and WebAdmin
-    if(pc.PlayerReplicationInfo.PlayerID == 0)
-    {
-      strTemp = RemoveColor(Msg);
-      pc.teamMessage(none, strTemp, 'KFAutoCallOut');
-      continue;
-    }
+  // Remove colors for server log and WebAdmin
+  if(pc.PlayerReplicationInfo.PlayerID == 0)
+  {
+    strTemp = RemoveColor(Msg);
+    pc.teamMessage(none, strTemp, 'KFAutoCallOut');
+    continue;
+  }
 
-    pc.teamMessage(none, Msg, 'KFAutoCallOut');
+  pc.teamMessage(none, Msg, 'KFAutoCallOut');
   }
 }
 
@@ -194,11 +199,11 @@ function string RemoveColor(string S)
 
 defaultproperties
 {
-	// Mut Vars
+  // Mut Vars
   GroupName="KF-AutoCallOut"
   FriendlyName="FP & SC Auto Call Out - v1.0"
   Description="Automatically calls out FPs & SCs as a broadcast message to all players [Whitelisted]; By Vel-San"
   bAlwaysRelevant=True
   RemoteRole=ROLE_SimulatedProxy
-	bNetNotify=True
+  bNetNotify=True
 }
