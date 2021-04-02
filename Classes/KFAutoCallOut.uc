@@ -8,13 +8,10 @@
 
 Class KFAutoCallOut extends Mutator config(KFAutoCallOut);
 
-var() config bool bDEBUG;
+var() config bool bDebug;
 var() config string sWarningMSG;
 var() config int iDelay;
 
-var bool DEBUG;
-var string WarningMSG;
-var int Delay;
 
 // Colors from Config
 struct ColorRecord
@@ -27,22 +24,13 @@ var() config array<ColorRecord> ColorList; // Color list
 
 function PostBeginPlay()
 {
-  WarningMSG = sWarningMSG;
-  Delay = iDelay;
-  DEBUG = bDEBUG;
-
-  // TO-DO Complete this to show player name who sees Fleshpounds and Scrakes first
-  // MutLog("-----|| Changing SC & FP Controller ||-----");
-  // class'ZombieFleshpound'.Default.ControllerClass = Class'FPCustomController';
-  // class'ZombieScrake'.Default.ControllerClass = Class'SCCustomController';
-
-  if(DEBUG)
+  if(bDebug)
   {
-    MutLog("-----|| DEBUG - MSG: " $WarningMSG$ " ||-----");
-    MutLog("-----|| DEBUG - Delay: " $Delay$ " ||-----");
+    MutLog("-----|| Debug - MSG: " $sWarningMSG$ " ||-----");
+    MutLog("-----|| Debug - Delay: " $iDelay$ " ||-----");
   }
 
-  SetTimer( Delay, true);
+  SetTimer( iDelay, true);
 }
 
 static function FillPlayInfo(PlayInfo PlayInfo)
@@ -50,7 +38,7 @@ static function FillPlayInfo(PlayInfo PlayInfo)
   Super.FillPlayInfo(PlayInfo);
   PlayInfo.AddSetting("KFAutoCallOut", "sWarningMSG", "Warning Message", 0, 0, "text");
   PlayInfo.AddSetting("KFAutoCallOut", "iDelay", "MSG Frequency", 0, 0, "text");
-  PlayInfo.AddSetting("KFAutoCallOut", "bDEBUG", "DEBUG", 0, 0, "check");
+  PlayInfo.AddSetting("KFAutoCallOut", "bDebug", "Debug", 0, 0, "check");
 }
 
 static function string GetDescriptionText(string SettingName)
@@ -61,7 +49,7 @@ static function string GetDescriptionText(string SettingName)
         return "Message to show players about SCs & FPs number. Use %FP for Fleshpounds & %SC for Scrakes";
     case "iDelay":
         return "How often will the warning message be sent out ( in Seconds ) | Preffered 5";
-    case "bDEBUG":
+    case "bDebug":
         return "Shows some Debugging messages in the LOG. Keep OFF unless you know what you are doing!";
     default:
         return Super.GetDescriptionText(SettingName);
@@ -87,7 +75,7 @@ function Timer()
   iSC = CheckScrakeCount(iCountSC);
   sFP = string(iFP);
   sSC = string(iSC);
-  tmpMSG = WarningMSG;
+  tmpMSG = sWarningMSG;
 
   ReplaceText(tmpMSG, "%FP", sFP);
   ReplaceText(tmpMSG, "%SC", sSC);
@@ -97,10 +85,10 @@ function Timer()
     BroadcastMSG(tmpMSG);
   }
 
-  if(DEBUG)
+  if(bDebug)
   {
-    MutLog("-----|| DEBUG - FP Count: " $iFP$ "x | SC Count: " $iSC$ "x ||-----");
-    MutLog("-----|| DEBUG - WarningMSG: " $tmpMSG$ " ||-----");
+    MutLog("-----|| Debug - FP Count: " $iFP$ "x | SC Count: " $iSC$ "x ||-----");
+    MutLog("-----|| Debug - WarningMSG: " $tmpMSG$ " ||-----");
   }
 }
 
