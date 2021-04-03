@@ -32,14 +32,6 @@ function PostBeginPlay()
 {
   // Var init
   KFGT = KFGameType(Level.Game);
-  bPlayFP = false;
-  bPlaySC = false;
-  iFP = 0;
-  iSC = 0;
-  iLastPlayedAtFP = 0;
-  iLastPlayedAtSC = 0;
-  tmpFP = 0;
-  tmpSC = 0;
 
   // Force client to download SoundPack
   AddToPackageMap("ACO_SNDS.uax");
@@ -83,10 +75,7 @@ function tick(float Deltatime)
 
 function Timer()
 {
-  if (KFGT.bWaveInProgress && !KFGT.IsInState('PendingMatch') && !KFGT.IsInState('GameEnded'))
-  {
-    CallOut();
-  }
+  if (KFGT.bWaveInProgress && !KFGT.IsInState('PendingMatch') && !KFGT.IsInState('GameEnded')) CallOut();
 }
 
 function CallOut()
@@ -100,10 +89,7 @@ function CallOut()
   ReplaceText(tmpMSG, "%FP", sFP);
   ReplaceText(tmpMSG, "%SC", sSC);
 
-  if (iFP != 0 || iSC != 0)
-  {
-    BroadcastMSG(tmpMSG);
-  }
+  if (iFP != 0 || iSC != 0) BroadcastMSG(tmpMSG);
 
   if(bDebug)
   {
@@ -117,11 +103,9 @@ function int CheckFleshPoundCount()
   local KFMonster Monster;
   local int i;
 
-  foreach DynamicActors(class'KFMonster', Monster){
-    if (Monster.isA('ZombieFleshpound'))
-    {
-      i = i + 1;
-    }
+  foreach DynamicActors(class'KFMonster', Monster)
+  {
+    if (Monster.isA('ZombieFleshpound')) i++;
   }
   if (i >= 1) bPlayFP = true;
   else bPlayFP = false;
@@ -133,11 +117,9 @@ function int CheckScrakeCount()
   local KFMonster Monster;
   local int j;
 
-  foreach DynamicActors(class'KFMonster', Monster){
-    if (Monster.isA('ZombieScrake'))
-    {
-      j = j + 1;
-    }
+  foreach DynamicActors(class'KFMonster', Monster)
+  {
+    if (Monster.isA('ZombieScrake')) j++;
   }
   if (j >= 1) bPlaySC = true;
   else bPlaySC = false;
@@ -259,6 +241,6 @@ defaultproperties
 {
   // Mut Vars
   GroupName="KF-AutoCallOut"
-  FriendlyName="FP & SC Auto Call Out - v1.1"
-  Description="Prints number of SC & FP Globally, and plays Spawn sound effects like KF2 [Whitelisted]; By Vel-San"
+  FriendlyName="FP & SC Auto Call Out - v1.2"
+  Description="Prints count of SC & FP Globally, and plays Spawn sound effects like KF2 [Whitelisted]; By Vel-San"
 }
