@@ -38,12 +38,12 @@ function PostBeginPlay()
 
   if(bDebug)
   {
-    MutLog("-----|| Debug - MSG: " $sWarningMSG$ " ||-----");
-    MutLog("-----|| Debug - FP Sound: " $sFleshSND$ " ||-----");
-    MutLog("-----|| Debug - SC Sound: " $sScrakeSND$ " ||-----");
-    MutLog("-----|| Debug - Delay: " $iDelay$ " ||-----");
-    MutLog("-----|| Debug - Flesh Pound Sound Delay: " $iDelayFP$ " ||-----");
-    MutLog("-----|| Debug - Scrake Sound Delay: " $iDelaySC$ " ||-----");
+  MutLog("-----|| Debug - MSG: " $sWarningMSG$ " ||-----");
+  MutLog("-----|| Debug - FP Sound: " $sFleshSND$ " ||-----");
+  MutLog("-----|| Debug - SC Sound: " $sScrakeSND$ " ||-----");
+  MutLog("-----|| Debug - Delay: " $iDelay$ " ||-----");
+  MutLog("-----|| Debug - Flesh Pound Sound Delay: " $iDelayFP$ " ||-----");
+  MutLog("-----|| Debug - Scrake Sound Delay: " $iDelaySC$ " ||-----");
   }
 
   SetTimer(iDelay, true);
@@ -53,23 +53,23 @@ function tick(float Deltatime)
 {
   if (KFGT.bWaveInProgress && !KFGT.IsInState('PendingMatch') && !KFGT.IsInState('GameEnded'))
   {
-    // Always gather count of FPs & SCs
-    iFP = CheckFleshPoundCount();
-    iSC = CheckScrakeCount();
+  // Always gather count of FPs & SCs
+  iFP = CheckFleshPoundCount();
+  iSC = CheckScrakeCount();
 
-    // Play FP Sound
-    if (bPlaySoundFP && bPlayFP && (tmpFP < iFP) && (iLastPlayedAtFP < Level.TimeSeconds))
-    {
-      tmpFP = iFP;
-      PlaySoundFP(sFleshSND);
-    }
+  // Play FP Sound
+  if (bPlaySoundFP && bPlayFP && (tmpFP < iFP) && (iLastPlayedAtFP < Level.TimeSeconds))
+  {
+  tmpFP = iFP;
+  PlaySoundFP(sFleshSND);
+  }
 
-    // Play FP Sound
-    if (bPlaySoundSC && bPlaySC && (tmpSC < iSC) && (iLastPlayedAtSC < Level.TimeSeconds))
-    {
-      tmpSC = iSC;
-      PlaySoundSC(sScrakeSND);
-    }
+  // Play FP Sound
+  if (bPlaySoundSC && bPlaySC && (tmpSC < iSC) && (iLastPlayedAtSC < Level.TimeSeconds))
+  {
+  tmpSC = iSC;
+  PlaySoundSC(sScrakeSND);
+  }
   }
 }
 
@@ -93,8 +93,8 @@ function CallOut()
 
   if(bDebug)
   {
-    MutLog("-----|| Debug - FP Count: " $iFP$ "x | SC Count: " $iSC$ "x ||-----");
-    MutLog("-----|| Debug - WarningMSG: " $tmpMSG$ " ||-----");
+  MutLog("-----|| Debug - FP Count: " $iFP$ "x | SC Count: " $iSC$ "x ||-----");
+  MutLog("-----|| Debug - WarningMSG: " $tmpMSG$ " ||-----");
   }
 }
 
@@ -105,7 +105,7 @@ function int CheckFleshPoundCount()
 
   foreach DynamicActors(class'KFMonster', Monster)
   {
-    if (Monster.isA('ZombieFleshpound')) i++;
+  if (Monster.isA('ZombieFleshpound')) i++;
   }
   if (i >= 1) bPlayFP = true;
   else bPlayFP = false;
@@ -119,7 +119,7 @@ function int CheckScrakeCount()
 
   foreach DynamicActors(class'KFMonster', Monster)
   {
-    if (Monster.isA('ZombieScrake')) j++;
+  if (Monster.isA('ZombieScrake')) j++;
   }
   if (j >= 1) bPlaySC = true;
   else bPlaySC = false;
@@ -133,13 +133,13 @@ function PlaySoundFP(string Sound)
 
   SoundEffect = sound(DynamicLoadObject(Sound, class'Sound'));
   for( C = Level.ControllerList; C != None; C = C.nextController )
-	{
-		if( C.IsA('PlayerController') && PlayerController(C).PlayerReplicationInfo.PlayerID != 0)
-		{
-			PlayerController(C).ClientPlaySound(SoundEffect, true, 20);
-      iLastPlayedAtFP = Level.TimeSeconds + iDelayFP;
-		}
-	}
+  {
+  if( C.IsA('PlayerController') && PlayerController(C).PlayerReplicationInfo.PlayerID != 0)
+  {
+  PlayerController(C).ClientPlaySound(SoundEffect, true, 20);
+  iLastPlayedAtFP = Level.TimeSeconds + iDelayFP;
+  }
+  }
 }
 
 function PlaySoundSC(string Sound)
@@ -149,13 +149,13 @@ function PlaySoundSC(string Sound)
 
   SoundEffect = sound(DynamicLoadObject(Sound, class'Sound'));
   for( C = Level.ControllerList; C != None; C = C.nextController )
-	{
-		if( C.IsA('PlayerController') && PlayerController(C).PlayerReplicationInfo.PlayerID != 0)
-		{
-			PlayerController(C).ClientPlaySound(SoundEffect, true, 20);
-      iLastPlayedAtSC = Level.TimeSeconds + iDelaySC;
-		}
-	}
+  {
+  if( C.IsA('PlayerController') && PlayerController(C).PlayerReplicationInfo.PlayerID != 0)
+  {
+  PlayerController(C).ClientPlaySound(SoundEffect, true, 20);
+  iLastPlayedAtSC = Level.TimeSeconds + iDelaySC;
+  }
+  }
 }
 
 simulated function TimeStampLog(coerce string s)
@@ -184,19 +184,17 @@ event BroadcastMSG(coerce string Msg)
   for(c = level.controllerList; c != none; c = c.nextController)
   {
   // Allow only player controllers
-  if(!c.isA('PlayerController'))
-    continue;
+  if(!c.isA('PlayerController')) continue;
 
   pc = PlayerController(c);
-  if(pc == none)
-    continue;
+  if(pc == none) continue;
 
   // Remove colors for server log and WebAdmin
   if(pc.PlayerReplicationInfo.PlayerID == 0)
   {
-    strTemp = RemoveColor(Msg);
-    pc.teamMessage(none, strTemp, 'AutoCallOut');
-    continue;
+  strTemp = RemoveColor(Msg);
+  pc.teamMessage(none, strTemp, 'AutoCallOut');
+  continue;
   }
 
   pc.teamMessage(none, Msg, 'AutoCallOut');
@@ -209,10 +207,10 @@ function SetColor(out string Msg)
   local int i;
   for(i=0; i<ColorList.Length; i++)
   {
-    if(ColorList[i].ColorTag!="" && InStr(Msg, ColorList[i].ColorTag)!=-1)
-    {
-      ReplaceText(Msg, ColorList[i].ColorTag, FormatTagToColorCode(ColorList[i].ColorTag, ColorList[i].Color));
-    }
+  if(ColorList[i].ColorTag!="" && InStr(Msg, ColorList[i].ColorTag)!=-1)
+  {
+  ReplaceText(Msg, ColorList[i].ColorTag, FormatTagToColorCode(ColorList[i].ColorTag, ColorList[i].Color));
+  }
   }
 }
 
@@ -229,8 +227,8 @@ function string RemoveColor(string S)
   P=InStr(S,Chr(27));
   While(P>=0)
   {
-    S=Left(S,P)$Mid(S,P+4);
-    P=InStr(S,Chr(27));
+  S=Left(S,P)$Mid(S,P+4);
+  P=InStr(S,Chr(27));
   }
   Return S;
 }
