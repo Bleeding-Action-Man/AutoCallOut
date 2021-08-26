@@ -43,7 +43,7 @@ bPlaySoundFP=True
 # If true, sound for SC will play on spawn
 bPlaySoundSC=True
 # Play a sound on every single SC/FP spawn
-# If old count of FP before the delay is less than count of FP after the delay
+# If old count of SC/FP before the delay is less than count of SC/FP after the delay
 # No sound will be played
 bPlayEverySpawn=true
 # Better to keep debugging False :)
