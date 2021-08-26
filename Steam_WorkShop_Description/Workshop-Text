@@ -33,11 +33,11 @@ sFleshSND=ACO_SNDS.FP_Spawn
 # Name of the SC Scount to play | Add your sounds to the ACO_SNDS.uax (.wav formats)
 sScrakeSND=ACO_SNDS.SC_Spawn
 # Change the Delay/Frequency of each sent warning message. I find 10 Seconds to be optimal
-iDelay=5.0
+fDelay=5.0
 # Delay between each FP sound | Seconds
-iDelayFP=0.0
+fDelayFP=0.0
 # Delay between each SC sound | Seconds
-iDelaySC=0.0
+fDelaySC=0.0
 # If true, sound for FP will play on spawn
 bPlaySoundFP=True
 # If true, sound for SC will play on spawn
