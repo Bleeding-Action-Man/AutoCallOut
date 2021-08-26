@@ -10,7 +10,7 @@ Class AutoCallOut extends Mutator config(AutoCallOut_Config);
 #exec OBJ LOAD FILE=ACO_SNDS.uax
 
 // Config Vars
-var config bool bDebug, bPlaySoundFP, bPlaySoundSC, bPlayEverySpawn;
+var config bool bDebug, bPlaySoundFP, bPlaySoundSC;
 var config string sWarningMSG, sFleshSND, sScrakeSND;
 var config float fDelay, fDelayFP, fDelaySC;
 
@@ -43,7 +43,6 @@ function PostBeginPlay()
     MutLog("-----|| Debug - FP Sound: " $sFleshSND$ " ||-----");
     MutLog("-----|| Debug - SC Sound: " $sScrakeSND$ " ||-----");
     MutLog("-----|| Debug - Delay: " $fDelay$ " ||-----");
-    MutLog("-----|| Debug - PlayEverySpawn: " $bPlayEverySpawn$ " ||-----");
     MutLog("-----|| Debug - Flesh Pound Sound Delay: " $fDelayFP$ " ||-----");
     MutLog("-----|| Debug - Scrake Sound Delay: " $fDelaySC$ " ||-----");
   }
@@ -62,23 +61,23 @@ function tick(float Deltatime)
     // Play FP Sound
     if (bPlaySoundFP && bPlayFP && (fLastPlayedAtFP < Level.TimeSeconds))
     {
-      if(bPlayEverySpawn) PlaySoundFP(sFleshSND);
-      else if (tmpFP < iFP)
+      if (tmpFP < iFP)
       {
         tmpFP = iFP;
         PlaySoundFP(sFleshSND);
       }
+      else if(tmpFP > iFP) tmpFP = iFP;
     }
 
     // Play SC Sound
     if (bPlaySoundSC && bPlaySC && (fLastPlayedAtSC < Level.TimeSeconds))
     {
-      if(bPlayEverySpawn) PlaySoundSC(sScrakeSND);
-      else if (tmpSC < iSC)
+      if (tmpSC < iSC)
       {
         tmpSC = iSC;
         PlaySoundSC(sScrakeSND);
       }
+      else if(tmpSC > iSC) tmpSC = iSC;
     }
   }
 }
@@ -249,6 +248,6 @@ defaultproperties
 {
   // Mut Vars
   GroupName="KF-AutoCallOut"
-  FriendlyName="FP & SC Auto Call Out - v1.3.1"
+  FriendlyName="FP & SC Auto Call Out - v1.3.2"
   Description="Prints count of SC & FP Globally, and plays Spawn sound effects like KF2 [Whitelisted]; By Vel-San"
 }
