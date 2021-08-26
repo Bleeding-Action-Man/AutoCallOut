@@ -62,7 +62,7 @@ function tick(float Deltatime)
     if (bPlaySoundFP && bPlayFP && (iLastPlayedAtFP < Level.TimeSeconds))
     {
       if(bPlayEverySpawn) PlaySoundFP(sFleshSND);
-      elif (tmpFP < iFP)
+      else if (tmpFP < iFP)
       {
         tmpFP = iFP;
         PlaySoundFP(sFleshSND);
@@ -73,7 +73,7 @@ function tick(float Deltatime)
     if (bPlaySoundSC && bPlaySC && (iLastPlayedAtSC < Level.TimeSeconds))
     {
       if(bPlayEverySpawn) PlaySoundSC(sScrakeSND);
-      elif (tmpSC < iSC)
+      else if (tmpSC < iSC)
       {
         tmpSC = iSC;
         PlaySoundSC(sScrakeSND);
