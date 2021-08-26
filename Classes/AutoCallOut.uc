@@ -12,7 +12,7 @@ Class AutoCallOut extends Mutator config(AutoCallOut_Config);
 // Config Vars
 var config bool bDebug, bPlaySoundFP, bPlaySoundSC, bPlayEverySpawn;
 var config string sWarningMSG, sFleshSND, sScrakeSND;
-var config int iDelay, iDelayFP, iDelaySC;
+var config float fDelay, fDelayFP, fDelaySC;
 
 // Colors from Config
 struct ColorRecord
@@ -26,7 +26,8 @@ var config array<ColorRecord> ColorList; // Color list
 // Mut Vars
 var KFGameType KFGT;
 var bool bPlayFP, bPlaySC;
-var int iFP, iSC, iLastPlayedAtFP, iLastPlayedAtSC, tmpFP, tmpSC;
+var int iFP, iSC, tmpFP, tmpSC;
+var float fLastPlayedAtFP, fLastPlayedAtSC;
 
 function PostBeginPlay()
 {
@@ -41,13 +42,13 @@ function PostBeginPlay()
     MutLog("-----|| Debug - MSG: " $sWarningMSG$ " ||-----");
     MutLog("-----|| Debug - FP Sound: " $sFleshSND$ " ||-----");
     MutLog("-----|| Debug - SC Sound: " $sScrakeSND$ " ||-----");
-    MutLog("-----|| Debug - Delay: " $iDelay$ " ||-----");
+    MutLog("-----|| Debug - Delay: " $fDelay$ " ||-----");
     MutLog("-----|| Debug - PlayEverySpawn: " $bPlayEverySpawn$ " ||-----");
-    MutLog("-----|| Debug - Flesh Pound Sound Delay: " $iDelayFP$ " ||-----");
-    MutLog("-----|| Debug - Scrake Sound Delay: " $iDelaySC$ " ||-----");
+    MutLog("-----|| Debug - Flesh Pound Sound Delay: " $fDelayFP$ " ||-----");
+    MutLog("-----|| Debug - Scrake Sound Delay: " $fDelaySC$ " ||-----");
   }
 
-  SetTimer(iDelay, true);
+  SetTimer(fDelay, true);
 }
 
 function tick(float Deltatime)
@@ -59,7 +60,7 @@ function tick(float Deltatime)
     iSC = CheckScrakeCount();
 
     // Play FP Sound
-    if (bPlaySoundFP && bPlayFP && (iLastPlayedAtFP < Level.TimeSeconds))
+    if (bPlaySoundFP && bPlayFP && (fLastPlayedAtFP < Level.TimeSeconds))
     {
       if(bPlayEverySpawn) PlaySoundFP(sFleshSND);
       else if (tmpFP < iFP)
@@ -70,7 +71,7 @@ function tick(float Deltatime)
     }
 
     // Play SC Sound
-    if (bPlaySoundSC && bPlaySC && (iLastPlayedAtSC < Level.TimeSeconds))
+    if (bPlaySoundSC && bPlaySC && (fLastPlayedAtSC < Level.TimeSeconds))
     {
       if(bPlayEverySpawn) PlaySoundSC(sScrakeSND);
       else if (tmpSC < iSC)
@@ -146,7 +147,7 @@ function PlaySoundFP(string Sound)
     if( C.IsA('PlayerController') && PlayerController(C).PlayerReplicationInfo.PlayerID != 0)
     {
       PlayerController(C).ClientPlaySound(SoundEffect, true, 20);
-      iLastPlayedAtFP = Level.TimeSeconds + iDelayFP;
+      fLastPlayedAtFP = Level.TimeSeconds + fDelayFP;
     }
   }
 }
@@ -162,7 +163,7 @@ function PlaySoundSC(string Sound)
     if( C.IsA('PlayerController') && PlayerController(C).PlayerReplicationInfo.PlayerID != 0)
     {
       PlayerController(C).ClientPlaySound(SoundEffect, true, 20);
-      iLastPlayedAtSC = Level.TimeSeconds + iDelaySC;
+      fLastPlayedAtSC = Level.TimeSeconds + fDelaySC;
     }
   }
 }
@@ -248,6 +249,6 @@ defaultproperties
 {
   // Mut Vars
   GroupName="KF-AutoCallOut"
-  FriendlyName="FP & SC Auto Call Out - v1.3"
+  FriendlyName="FP & SC Auto Call Out - v1.3.1"
   Description="Prints count of SC & FP Globally, and plays Spawn sound effects like KF2 [Whitelisted]; By Vel-San"
 }
