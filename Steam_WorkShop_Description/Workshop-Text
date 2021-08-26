@@ -5,6 +5,7 @@ Sick & Tired of no one calling FPs & SCs ? Don't know which key to bind for Call
 - Customizable message colors
 - Sound effects for FP spawn (Same as KF2, easy to add & customize)
 - Sound effects for SC Spawn (Same as KF2, easy to add & customize)
+- Delay & other customizable configs to avoid spamming
 
 [h1][b][u]Whitelist Status[/u][/b][/h1]
 
@@ -23,29 +24,30 @@ Sick & Tired of no one calling FPs & SCs ? Don't know which key to bind for Call
 
 [code]
 [AutoCallOut.AutoCallOut]
+[AutoCallOut.AutoCallOut]
 # Replace %g %w %b with any other color you want from the list below
 # After you write your warning message, use %FP and %SC as the number of Fleshpounds and Scrakes
-sWarningMSG=-----|| %gFP Count: %w %FPx | %bSC Count: %w %SCx ||-----
+sWarningMSG=-----|| %gFleshpounds: %w %FPx %o| %bScrakes: %w %SCx ||-----
 # Name of the FP Sound to play | Add your sounds to the ACO_SNDS.uax (.wav formats)
 sFleshSND=ACO_SNDS.FP_Spawn
 # Name of the SC Scount to play | Add your sounds to the ACO_SNDS.uax (.wav formats)
 sScrakeSND=ACO_SNDS.SC_Spawn
 # Change the Delay/Frequency of each sent warning message. I find 10 Seconds to be optimal
-iDelay=10
+iDelay=6
 # Delay between each FP sound | Seconds
-# If old count of FP before the delay is less than count of FP after the delay
-# No sound will be played
-iDelayFP=8
+iDelayFP=1
 # Delay between each SC sound | Seconds
-# If old count of SC before the delay is less than count of SC after the delay
-# No sound will be played
-iDelaySC=8
+iDelaySC=1
 # If true, sound for FP will play on spawn
 bPlaySoundFP=True
 # If true, sound for SC will play on spawn
 bPlaySoundSC=True
+# Play a sound on every single SC/FP spawn
+# If old count of FP before the delay is less than count of FP after the delay
+# No sound will be played
+iPlayEverySpawn=true
 # Better to keep debugging False :)
-bDebug=True
+bDebug=False
 # You can add more colors by using the same format of the below ColorList
 ColorList=(ColorName="Red",ColorTag="%r",Color=(B=0,G=0,R=200,A=0))
 ColorList=(ColorName="Orange",ColorTag="%o",Color=(B=0,G=127,R=255,A=0))
@@ -76,4 +78,4 @@ ColorList=(ColorName="White",ColorTag="%w",Color=(B=200,G=200,R=200,A=0))
 
 [h1][b][u]Manual Download Links (Recommended)[/u][/b][/h1]
 
-Github: https://github.com/Vel-San/KF-AutoCallOut/releases/tag/v1.2
+Github: https://github.com/Bleeding-Action-Man/AutoCallOut

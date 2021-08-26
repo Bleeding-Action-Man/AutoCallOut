@@ -10,7 +10,7 @@ Class AutoCallOut extends Mutator config(AutoCallOut_Config);
 #exec OBJ LOAD FILE=ACO_SNDS.uax
 
 // Config Vars
-var config bool bDebug, bPlaySoundFP, bPlaySoundSC;
+var config bool bDebug, bPlaySoundFP, bPlaySoundSC, bPlayEverySpawn;
 var config string sWarningMSG, sFleshSND, sScrakeSND;
 var config int iDelay, iDelayFP, iDelaySC;
 
@@ -38,12 +38,13 @@ function PostBeginPlay()
 
   if(bDebug)
   {
-  MutLog("-----|| Debug - MSG: " $sWarningMSG$ " ||-----");
-  MutLog("-----|| Debug - FP Sound: " $sFleshSND$ " ||-----");
-  MutLog("-----|| Debug - SC Sound: " $sScrakeSND$ " ||-----");
-  MutLog("-----|| Debug - Delay: " $iDelay$ " ||-----");
-  MutLog("-----|| Debug - Flesh Pound Sound Delay: " $iDelayFP$ " ||-----");
-  MutLog("-----|| Debug - Scrake Sound Delay: " $iDelaySC$ " ||-----");
+    MutLog("-----|| Debug - MSG: " $sWarningMSG$ " ||-----");
+    MutLog("-----|| Debug - FP Sound: " $sFleshSND$ " ||-----");
+    MutLog("-----|| Debug - SC Sound: " $sScrakeSND$ " ||-----");
+    MutLog("-----|| Debug - Delay: " $iDelay$ " ||-----");
+    MutLog("-----|| Debug - PlayEverySpawn: " $bPlayEverySpawn$ " ||-----");
+    MutLog("-----|| Debug - Flesh Pound Sound Delay: " $iDelayFP$ " ||-----");
+    MutLog("-----|| Debug - Scrake Sound Delay: " $iDelaySC$ " ||-----");
   }
 
   SetTimer(iDelay, true);
@@ -53,23 +54,31 @@ function tick(float Deltatime)
 {
   if (KFGT.bWaveInProgress && !KFGT.IsInState('PendingMatch') && !KFGT.IsInState('GameEnded'))
   {
-  // Always gather count of FPs & SCs
-  iFP = CheckFleshPoundCount();
-  iSC = CheckScrakeCount();
+    // Always gather count of FPs & SCs
+    iFP = CheckFleshPoundCount();
+    iSC = CheckScrakeCount();
 
-  // Play FP Sound
-  if (bPlaySoundFP && bPlayFP && (tmpFP < iFP) && (iLastPlayedAtFP < Level.TimeSeconds))
-  {
-  tmpFP = iFP;
-  PlaySoundFP(sFleshSND);
-  }
+    // Play FP Sound
+    if (bPlaySoundFP && bPlayFP && (iLastPlayedAtFP < Level.TimeSeconds))
+    {
+      if(bPlayEverySpawn) PlaySoundFP(sFleshSND);
+      elif (tmpFP < iFP)
+      {
+        tmpFP = iFP;
+        PlaySoundFP(sFleshSND);
+      }
+    }
 
-  // Play FP Sound
-  if (bPlaySoundSC && bPlaySC && (tmpSC < iSC) && (iLastPlayedAtSC < Level.TimeSeconds))
-  {
-  tmpSC = iSC;
-  PlaySoundSC(sScrakeSND);
-  }
+    // Play SC Sound
+    if (bPlaySoundSC && bPlaySC && (iLastPlayedAtSC < Level.TimeSeconds))
+    {
+      if(bPlayEverySpawn) PlaySoundSC(sScrakeSND);
+      elif (tmpSC < iSC)
+      {
+        tmpSC = iSC;
+        PlaySoundSC(sScrakeSND);
+      }
+    }
   }
 }
 
@@ -93,8 +102,8 @@ function CallOut()
 
   if(bDebug)
   {
-  MutLog("-----|| Debug - FP Count: " $iFP$ "x | SC Count: " $iSC$ "x ||-----");
-  MutLog("-----|| Debug - WarningMSG: " $tmpMSG$ " ||-----");
+    MutLog("-----|| Debug - FP Count: " $iFP$ "x | SC Count: " $iSC$ "x ||-----");
+    MutLog("-----|| Debug - WarningMSG: " $tmpMSG$ " ||-----");
   }
 }
 
@@ -105,7 +114,7 @@ function int CheckFleshPoundCount()
 
   foreach DynamicActors(class'KFMonster', Monster)
   {
-  if (Monster.isA('ZombieFleshpound')) i++;
+    if (Monster.isA('ZombieFleshpound')) i++;
   }
   if (i >= 1) bPlayFP = true;
   else bPlayFP = false;
@@ -119,7 +128,7 @@ function int CheckScrakeCount()
 
   foreach DynamicActors(class'KFMonster', Monster)
   {
-  if (Monster.isA('ZombieScrake')) j++;
+    if (Monster.isA('ZombieScrake')) j++;
   }
   if (j >= 1) bPlaySC = true;
   else bPlaySC = false;
@@ -134,11 +143,11 @@ function PlaySoundFP(string Sound)
   SoundEffect = sound(DynamicLoadObject(Sound, class'Sound'));
   for( C = Level.ControllerList; C != None; C = C.nextController )
   {
-  if( C.IsA('PlayerController') && PlayerController(C).PlayerReplicationInfo.PlayerID != 0)
-  {
-  PlayerController(C).ClientPlaySound(SoundEffect, true, 20);
-  iLastPlayedAtFP = Level.TimeSeconds + iDelayFP;
-  }
+    if( C.IsA('PlayerController') && PlayerController(C).PlayerReplicationInfo.PlayerID != 0)
+    {
+      PlayerController(C).ClientPlaySound(SoundEffect, true, 20);
+      iLastPlayedAtFP = Level.TimeSeconds + iDelayFP;
+    }
   }
 }
 
@@ -150,11 +159,11 @@ function PlaySoundSC(string Sound)
   SoundEffect = sound(DynamicLoadObject(Sound, class'Sound'));
   for( C = Level.ControllerList; C != None; C = C.nextController )
   {
-  if( C.IsA('PlayerController') && PlayerController(C).PlayerReplicationInfo.PlayerID != 0)
-  {
-  PlayerController(C).ClientPlaySound(SoundEffect, true, 20);
-  iLastPlayedAtSC = Level.TimeSeconds + iDelaySC;
-  }
+    if( C.IsA('PlayerController') && PlayerController(C).PlayerReplicationInfo.PlayerID != 0)
+    {
+      PlayerController(C).ClientPlaySound(SoundEffect, true, 20);
+      iLastPlayedAtSC = Level.TimeSeconds + iDelaySC;
+    }
   }
 }
 
@@ -239,6 +248,6 @@ defaultproperties
 {
   // Mut Vars
   GroupName="KF-AutoCallOut"
-  FriendlyName="FP & SC Auto Call Out - v1.2"
+  FriendlyName="FP & SC Auto Call Out - v1.3"
   Description="Prints count of SC & FP Globally, and plays Spawn sound effects like KF2 [Whitelisted]; By Vel-San"
 }
