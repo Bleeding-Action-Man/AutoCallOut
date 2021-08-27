@@ -79,6 +79,7 @@ function tick(float Deltatime)
     {
       if (tmpSC < iSC)
       {
+        bResetTmpVarSC = true;
         tmpSC = iSC;
         PlaySoundSC(sScrakeSND);
       }
@@ -270,6 +271,6 @@ defaultproperties
 {
   // Mut Vars
   GroupName="KF-AutoCallOut"
-  FriendlyName="FP & SC Auto Call Out - v1.3.3"
+  FriendlyName="FP & SC Auto Call Out - v1.3.4"
   Description="Prints count of SC & FP Globally, and plays Spawn sound effects like KF2 [Whitelisted]; By Vel-San"
 }
