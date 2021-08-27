@@ -25,7 +25,7 @@ var config array<ColorRecord> ColorList; // Color list
 
 // Mut Vars
 var KFGameType KFGT;
-var bool bPlayFP, bPlaySC;
+var bool bPlayFP, bPlaySC, bResetTmpVarFP, bResetTmpVarSC;
 var int iFP, iSC, tmpFP, tmpSC;
 var float fLastPlayedAtFP, fLastPlayedAtSC;
 
@@ -63,10 +63,15 @@ function tick(float Deltatime)
     {
       if (tmpFP < iFP)
       {
+        bResetTmpVarFP = true;
         tmpFP = iFP;
         PlaySoundFP(sFleshSND);
       }
-      else if(tmpFP > iFP) tmpFP = iFP;
+      else if(tmpFP > iFP)
+      {
+        bResetTmpVarFP = true;
+        tmpFP = iFP;
+      }
     }
 
     // Play SC Sound
@@ -77,7 +82,24 @@ function tick(float Deltatime)
         tmpSC = iSC;
         PlaySoundSC(sScrakeSND);
       }
-      else if(tmpSC > iSC) tmpSC = iSC;
+      else if(tmpSC > iSC)
+      {
+        bResetTmpVarSC = true;
+        tmpSC = iSC;
+      }
+    }
+  }
+  else
+  {
+    if(bResetTmpVarFP)
+    {
+      bResetTmpVarFP = false;
+      tmpFP = 0;
+    }
+    if(bResetTmpVarSC)
+    {
+      bResetTmpVarSC = false;
+      tmpSC = 0;
     }
   }
 }
@@ -192,21 +214,21 @@ event BroadcastMSG(coerce string Msg)
 
   for(c = level.controllerList; c != none; c = c.nextController)
   {
-  // Allow only player controllers
-  if(!c.isA('PlayerController')) continue;
+    // Allow only player controllers
+    if(!c.isA('PlayerController')) continue;
 
-  pc = PlayerController(c);
-  if(pc == none) continue;
+    pc = PlayerController(c);
+    if(pc == none) continue;
 
-  // Remove colors for server log and WebAdmin
-  if(pc.PlayerReplicationInfo.PlayerID == 0)
-  {
-  strTemp = RemoveColor(Msg);
-  pc.teamMessage(none, strTemp, 'AutoCallOut');
-  continue;
-  }
+    // Remove colors for server log and WebAdmin
+    if(pc.PlayerReplicationInfo.PlayerID == 0)
+    {
+      strTemp = RemoveColor(Msg);
+      pc.teamMessage(none, strTemp, 'AutoCallOut');
+      continue;
+    }
 
-  pc.teamMessage(none, Msg, 'AutoCallOut');
+    pc.teamMessage(none, Msg, 'AutoCallOut');
   }
 }
 
@@ -216,10 +238,10 @@ function SetColor(out string Msg)
   local int i;
   for(i=0; i<ColorList.Length; i++)
   {
-  if(ColorList[i].ColorTag!="" && InStr(Msg, ColorList[i].ColorTag)!=-1)
-  {
-  ReplaceText(Msg, ColorList[i].ColorTag, FormatTagToColorCode(ColorList[i].ColorTag, ColorList[i].Color));
-  }
+    if(ColorList[i].ColorTag!="" && InStr(Msg, ColorList[i].ColorTag)!=-1)
+    {
+      ReplaceText(Msg, ColorList[i].ColorTag, FormatTagToColorCode(ColorList[i].ColorTag, ColorList[i].Color));
+    }
   }
 }
 
@@ -248,6 +270,6 @@ defaultproperties
 {
   // Mut Vars
   GroupName="KF-AutoCallOut"
-  FriendlyName="FP & SC Auto Call Out - v1.3.2"
+  FriendlyName="FP & SC Auto Call Out - v1.3.3"
   Description="Prints count of SC & FP Globally, and plays Spawn sound effects like KF2 [Whitelisted]; By Vel-San"
 }
